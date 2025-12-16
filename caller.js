@@ -19,6 +19,10 @@
   var localFirst = location.hostname.toLowerCase();
 
   // 2) Ask bridge for global first domain (cross-domain test)
+  console.log("Creating iframe for bridge communication");
+  console.log("Bridge URL:", ORIGIN + "/bridge.js");
+  console.log("Current domain:", localFirst);
+  
   var f = document.createElement("iframe");
   f.style.position = "fixed";
   f.style.left = "-9999px";
@@ -27,6 +31,10 @@
   f.style.height = "1px";
   f.style.border = "0";
   f.src = ORIGIN + "/bridge.js";
+  
+  f.onerror = function() {
+    console.error("Iframe failed to load");
+  };
 
   function cleanup() {
     window.removeEventListener("message", onMsg);
@@ -34,10 +42,18 @@
   }
 
   function onMsg(e) {
-    if (e.origin !== ORIGIN) return;
-    if (!e.data || e.data.type !== "GLOBAL_FIRST_DOMAIN") return;
+    console.log("Received message:", e.data, "from origin:", e.origin);
+    if (e.origin !== ORIGIN) {
+      console.log("Origin mismatch. Expected:", ORIGIN, "Got:", e.origin);
+      return;
+    }
+    if (!e.data || e.data.type !== "GLOBAL_FIRST_DOMAIN") {
+      console.log("Message type mismatch. Expected: GLOBAL_FIRST_DOMAIN, Got:", e.data ? e.data.type : "no data");
+      return;
+    }
 
     var globalFirst = (e.data.first_domain || "").toLowerCase();
+    console.log("Global first domain received:", globalFirst);
 
     if (globalFirst) {
       alert("First Domain: " + globalFirst);
@@ -51,12 +67,17 @@
   window.addEventListener("message", onMsg, false);
 
   f.onload = function () {
+    console.log("Iframe loaded successfully");
     try {
+      console.log("Sending message to bridge:", { type: "GET_OR_SET_GLOBAL_FIRST_DOMAIN", domain: localFirst });
       f.contentWindow.postMessage(
         { type: "GET_OR_SET_GLOBAL_FIRST_DOMAIN", domain: localFirst },
         ORIGIN
       );
-    } catch (err) {}
+      console.log("Message sent to bridge");
+    } catch (err) {
+      console.error("Error sending message to bridge:", err);
+    }
   };
 
   (document.body || document.documentElement).appendChild(f);
