@@ -2,18 +2,6 @@
 // Embed this script in any domain to track first domain visits
 (function() {
   var BRIDGE_URL = "https://lingering-heart-256b.shubhendra-e5e.workers.dev";
-  var currentDomain = (window.location.hostname || "").toLowerCase();
-  
-  // Handle file:// protocol and localhost cases
-  if (!currentDomain || currentDomain === '' || window.location.protocol === 'file:') {
-    // For testing on file:// protocol, use a test domain
-    currentDomain = 'local-test.com';
-  }
-  
-  if (!currentDomain || currentDomain === 'localhost') {
-    // For localhost testing, use a recognizable test domain
-    currentDomain = 'localhost-test.com';
-  }
   
   // Helper function to make request
   function sendRequest() {
@@ -23,7 +11,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ domain: currentDomain })
+        body: '{}'
       })
       .then(function(response) {
         if (response.ok) return response.json();
@@ -73,7 +61,7 @@
         console.warn('Bridge network error');
       };
       
-      xhr.send(JSON.stringify({ domain: currentDomain }));
+      xhr.send('{}');
     }
   }
   

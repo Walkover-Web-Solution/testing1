@@ -1,41 +1,33 @@
 <script>
-// GTM Bridge Caller - Sets cookies ONLY on bridge domain
+// GTM Bridge Caller - Clean & Minimal
 (function() {
   var BRIDGE_URL = "https://lingering-heart-256b.shubhendra-e5e.workers.dev";
-  var currentDomain = window.location.hostname || "unknown.com";
-  
-  console.log("Bridge Caller - Domain:", currentDomain);
   
   var xhr = new XMLHttpRequest();
   xhr.open("POST", BRIDGE_URL, true);
   xhr.setRequestHeader("Content-Type", "application/json");
-  xhr.withCredentials = true; // CRITICAL: This allows bridge domain cookies
+  xhr.withCredentials = true;
   
   xhr.onreadystatechange = function() {
     if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300) {
       try {
         var data = JSON.parse(xhr.responseText);
         
-        console.log("✅ Bridge Success - First Domain:", data.first_domain);
-        console.log("🍪 Cookie set on bridge domain:", BRIDGE_URL);
-        
-        // Push to dataLayer (NO local cookie setting)
+        // Push to dataLayer
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({
           'event': 'first_domain_tracked',
           'first_domain': data.first_domain,
-          'is_first_visit': data.set_now,
-          'bridge_domain': 'lingering-heart-256b.shubhendra-e5e.workers.dev'
+          'is_first_visit': data.set_now
         });
         
       } catch (e) {
         console.warn("Bridge parse error");
       }
-    } else if (xhr.readyState === 4) {
-      console.error("Bridge failed:", xhr.status);
     }
   };
   
-  xhr.send(JSON.stringify({ domain: currentDomain }));
+  // Worker detects domain from Origin header automatically
+  xhr.send('{}');
 })();
 </script>

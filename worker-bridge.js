@@ -17,34 +17,29 @@ export default {
       return new Response(null, { headers: corsHeaders });
     }
     
-    // Handle both GET and POST requests
+    // Extract domain from Origin header (primary method)
     let domain = null;
     
-    if (request.method === 'GET') {
-      // Extract domain from query parameter
-      domain = url.searchParams.get('domain');
-    } else if (request.method === 'POST') {
-      // Extract domain from POST body
+    if (origin) {
       try {
-        const data = await request.json();
-        domain = data.domain;
+        const originUrl = new URL(origin);
+        domain = originUrl.hostname.toLowerCase();
       } catch (e) {
-        // Fallback to query parameter
-        domain = url.searchParams.get('domain');
+        domain = 'unknown-domain.com';
       }
-    }
-    
-    if (!domain || domain === '' || domain === 'null') {
-      // If no domain or empty, extract from Origin header as fallback
-      if (origin) {
+    } else {
+      // Fallback: try to get from request body/query if Origin missing
+      if (request.method === 'POST') {
         try {
-          const originUrl = new URL(origin);
-          domain = originUrl.hostname;
+          const data = await request.json();
+          domain = data.domain || 'no-origin.com';
         } catch (e) {
-          domain = 'unknown-domain.com';
+          domain = 'no-origin.com';
         }
+      } else if (request.method === 'GET') {
+        domain = url.searchParams.get('domain') || 'no-origin.com';
       } else {
-        domain = 'localhost';
+        domain = 'unknown-domain.com';
       }
     }
     
