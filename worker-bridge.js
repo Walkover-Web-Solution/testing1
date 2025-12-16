@@ -34,13 +34,18 @@ export default {
       }
     }
     
-    if (!domain) {
-      return new Response(JSON.stringify({
-        error: 'Domain parameter required'
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+    if (!domain || domain === '' || domain === 'null') {
+      // If no domain or empty, extract from Origin header as fallback
+      if (origin) {
+        try {
+          const originUrl = new URL(origin);
+          domain = originUrl.hostname;
+        } catch (e) {
+          domain = 'unknown-domain.com';
+        }
+      } else {
+        domain = 'localhost';
+      }
     }
     
     // Get existing cookie from request
