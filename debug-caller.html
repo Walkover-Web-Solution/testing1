@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head><title>Debug Bridge Test</title></head>
+<body>
+<h1>Bridge Debug Test</h1>
+<div id="status">Loading...</div>
+<iframe id="bridge" src="https://testing.saltbooks.com/bridge.js" style="width:300px;height:200px;border:1px solid red;"></iframe>
+
+<script>
+console.log("Debug caller starting...");
+
+const iframe = document.getElementById('bridge');
+const status = document.getElementById('status');
+
+iframe.onload = function() {
+    console.log("Iframe loaded");
+    status.textContent = "Iframe loaded, testing communication...";
+    
+    // Test communication after delay
+    setTimeout(function() {
+        console.log("Sending test message");
+        iframe.contentWindow.postMessage({
+            type: "GET_OR_SET_GLOBAL_FIRST_DOMAIN",
+            domain: "debug-test.com"
+        }, "https://testing.saltbooks.com");
+    }, 1000);
+    
+    // Timeout check
+    setTimeout(function() {
+        status.textContent = "TIMEOUT: No response after 3 seconds";
+    }, 3000);
+};
+
+iframe.onerror = function() {
+    console.log("Iframe failed to load");
+    status.textContent = "ERROR: Iframe failed to load";
+};
+
+// Listen for messages
+window.addEventListener('message', function(e) {
+    console.log("Received message:", e);
+    if (e.origin === "https://testing.saltbooks.com") {
+        status.textContent = "SUCCESS: Bridge responded - " + JSON.stringify(e.data);
+    }
+});
+</script>
+</body>
+</html>

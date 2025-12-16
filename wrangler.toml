@@ -1,6 +1,3 @@
 name = 'lingering-heart-256b'
 compatibility_date = "2025-12-16"
-
-[assets]
-directory = "."
-include = ["bridge.js"]
+main = "worker-bridge.js"

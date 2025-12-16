@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><title>JSONP Bridge Test</title></head>
+<body>
+<h1>JSONP Bridge Test</h1>
+<div id="status">Loading...</div>
+
+<script>
+// JSONP callback function
+window.bridgeCallback = function(data) {
+    console.log("Bridge response:", data);
+    document.getElementById('status').textContent = "SUCCESS: " + JSON.stringify(data);
+};
+
+// Create JSONP request
+const script = document.createElement('script');
+script.src = 'https://testing.saltbooks.com/bridge.js?callback=bridgeCallback&domain=' + location.hostname;
+script.onerror = function() {
+    document.getElementById('status').textContent = "ERROR: JSONP request failed";
+};
+
+document.head.appendChild(script);
+
+// Timeout check
+setTimeout(function() {
+    if (document.getElementById('status').textContent === "Loading...") {
+        document.getElementById('status').textContent = "TIMEOUT: No response after 3 seconds";
+    }
+}, 3000);
+</script>
+</body>
+</html>
