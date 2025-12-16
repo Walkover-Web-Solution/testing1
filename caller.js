@@ -15,12 +15,8 @@
       "; Path=/" + maxAge + "; SameSite=" + (sameSite || "Lax") + secure;
   }
 
-  // 1) Ensure a local cookie exists on this domain
-  var localFirst = getCookie("ft_first_domain");
-  if (!localFirst) {
-    localFirst = location.hostname.toLowerCase();
-    setCookie("ft_first_domain", localFirst, DAYS, "Lax");
-  }
+  // 1) Get current domain to send to bridge
+  var localFirst = location.hostname.toLowerCase();
 
   // 2) Ask bridge for global first domain (cross-domain test)
   var f = document.createElement("iframe");
@@ -44,10 +40,9 @@
     var globalFirst = (e.data.first_domain || "").toLowerCase();
 
     if (globalFirst) {
-      setCookie("ft_first_domain", globalFirst, DAYS, "Lax");
       alert("First Domain: " + globalFirst);
     } else {
-      alert("First Domain: " + localFirst);
+      alert("No first domain found");
     }
 
     cleanup();
