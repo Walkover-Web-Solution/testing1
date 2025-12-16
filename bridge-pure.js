@@ -17,7 +17,7 @@
   window.addEventListener("message", function (event) {
     console.log("Bridge received message:", event.data);
     var data = event.data || {};
-    if (data.type !== "GET_FIRST_DOMAIN") return;
+    if (data.type !== "GET_OR_SET_GLOBAL_FIRST_DOMAIN") return;
 
     var callerDomain = (data.domain || "").toLowerCase();
     if (!callerDomain) return;
@@ -34,7 +34,7 @@
     }
 
     event.source.postMessage(
-      { type: "FIRST_DOMAIN", first_domain: first, set_now: wasSetNow },
+      { type: "GLOBAL_FIRST_DOMAIN", first_domain: first, set_now: wasSetNow },
       event.origin
     );
   }, false);
