@@ -16,9 +16,13 @@
   }
 
   window.addEventListener("message", function (event) {
+    console.log("Bridge received message:", event.data);
     var data = event.data || {};
     if (data.type !== "GET_FIRST_DOMAIN") return;
-    if (data.token !== SHARED_SECRET) return;
+    if (data.token !== SHARED_SECRET) {
+      console.log("Token mismatch. Expected:", SHARED_SECRET, "Got:", data.token);
+      return;
+    }
 
     var callerDomain = (data.domain || "").toLowerCase();
     if (!callerDomain) return;
@@ -28,8 +32,10 @@
 
     if (!first) {
       first = callerDomain;
+      console.log("Setting cookie:", COOKIE, "=", first);
       setCookie(COOKIE, first, DAYS);
       wasSetNow = true;
+      console.log("Cookie set. Document.cookie:", document.cookie);
     }
 
     event.source.postMessage(
