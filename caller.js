@@ -68,16 +68,24 @@
 
   f.onload = function () {
     console.log("Iframe loaded successfully");
-    try {
-      console.log("Sending message to bridge:", { type: "GET_OR_SET_GLOBAL_FIRST_DOMAIN", domain: localFirst });
-      f.contentWindow.postMessage(
-        { type: "GET_OR_SET_GLOBAL_FIRST_DOMAIN", domain: localFirst },
-        ORIGIN
-      );
-      console.log("Message sent to bridge");
-    } catch (err) {
-      console.error("Error sending message to bridge:", err);
-    }
+    // Add delay to ensure bridge script is fully loaded and ready
+    setTimeout(function() {
+      try {
+        console.log("Sending message to bridge:", { type: "GET_OR_SET_GLOBAL_FIRST_DOMAIN", domain: localFirst });
+        f.contentWindow.postMessage(
+          { type: "GET_OR_SET_GLOBAL_FIRST_DOMAIN", domain: localFirst },
+          ORIGIN
+        );
+        console.log("Message sent to bridge");
+        
+        // Set timeout to detect if no response is received
+        setTimeout(function() {
+          console.warn("No response received from bridge after 2 seconds. Bridge may not be deployed at:", ORIGIN + "/bridge.js");
+        }, 2000);
+      } catch (err) {
+        console.error("Error sending message to bridge:", err);
+      }
+    }, 100); // 100ms delay
   };
 
   (document.body || document.documentElement).appendChild(f);
