@@ -1,6 +1,3 @@
-<!doctype html>
-<html><body>
-<script>
 (function () {
   var SHARED_SECRET = "YOUR_SECRET"; // TODO: Replace with actual shared secret
   var COOKIE = "ft_first_domain";
@@ -41,5 +38,3 @@
     );
   }, false);
 })();
-</script>
-</body></html>
