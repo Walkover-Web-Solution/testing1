@@ -1,5 +1,4 @@
 (function () {
-  var SHARED_SECRET = "YOUR_SECRET"; // TODO: Replace with actual shared secret
   var COOKIE = "ft_first_domain";
   var DAYS = 365;
 
@@ -19,10 +18,6 @@
     console.log("Bridge received message:", event.data);
     var data = event.data || {};
     if (data.type !== "GET_FIRST_DOMAIN") return;
-    if (data.token !== SHARED_SECRET) {
-      console.log("Token mismatch. Expected:", SHARED_SECRET, "Got:", data.token);
-      return;
-    }
 
     var callerDomain = (data.domain || "").toLowerCase();
     if (!callerDomain) return;

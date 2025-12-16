@@ -2,7 +2,6 @@
 <html><body>
 <script>
 (function () {
-  var SHARED_SECRET = "YOUR_SECRET"; // TODO: Replace with actual shared secret
   var COOKIE = "ft_first_domain";
   var DAYS = 365;
 
@@ -21,7 +20,6 @@
   window.addEventListener("message", function (event) {
     var data = event.data || {};
     if (data.type !== "GET_FIRST_DOMAIN") return;
-    if (data.token !== SHARED_SECRET) return;
 
     var callerDomain = (data.domain || "").toLowerCase();
     if (!callerDomain) return;
