@@ -13,8 +13,15 @@
   function setCookie(name, value, days) {
     var maxAge = "; Max-Age=" + String(days * 24 * 60 * 60);
     var secure = (location.protocol === "https:") ? "; Secure" : "";
-    // Needed for iframe cross-site cookie attempt
-    document.cookie = name + "=" + encodeURIComponent(value) + "; Path=/" + maxAge + "; SameSite=None" + secure;
+    
+    // Try SameSite=None first (for cross-site), fallback to Lax if it fails
+    try {
+      document.cookie = name + "=" + encodeURIComponent(value) + "; Path=/" + maxAge + "; SameSite=None" + secure;
+      console.log("Cookie set with SameSite=None");
+    } catch (e) {
+      console.log("SameSite=None failed, trying SameSite=Lax:", e);
+      document.cookie = name + "=" + encodeURIComponent(value) + "; Path=/" + maxAge + "; SameSite=Lax";
+    }
   }
 
   window.addEventListener("message", function (event) {
